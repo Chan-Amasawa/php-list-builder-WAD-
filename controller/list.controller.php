@@ -7,7 +7,8 @@ function index()
     $q = $_GET['q'];
     $sql .= " WHERE name LIKE '%$q%'";
   }
-  return view("list/index", ["lists" => all($sql)]);
+
+  return view("list/index", ["lists" => paginate($sql)]);
 }
 
 function create()
@@ -29,7 +30,7 @@ function delete()
   $id = $_POST['id'];
   $sql = "DELETE FROM my WHERE id = $id";
   run($sql);
-  redirect(route('list'), "List deleted successfully");
+  redirect($_SERVER['HTTP_REFERER'], "List deleted successfully");
 }
 
 function edit()
@@ -46,5 +47,5 @@ function update()
   $money = $_POST['money'];
   $sql = "UPDATE my SET name='$name', money = $money WHERE id = $id";
   run($sql);
-  redirect(route('list'), "List updated successfully");
+  redirect($_SERVER['HTTP_REFERER'], "List updated successfully");
 }

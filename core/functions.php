@@ -82,6 +82,24 @@ function alert(string $message, string $color = "success"): string
   return "<div class='alert alert-$color'>$message</div>";
 }
 
+function paginator($lists)
+{
+  $links = "";
+
+  foreach ($lists['links'] as $link) {
+    $links .= "<li class='page-item'><a class='page-link " . $link['is_active'] . "' href='" . $link['url'] . "'>" . $link['page_number'] . "</a></li>";
+  };
+
+  return "<div class='d-flex justify-content-between'>
+    <p class=' mb-0'>Total: " . $lists['total'] . "</p>
+    <nav aria-label='Page navigation example'>
+      <ul class='pagination'>
+        " . $links . "
+      </ul>
+    </nav>
+  </div>";
+}
+
 //session functions start
 function setSession(string $message, string $key = "message"): void
 {
@@ -105,7 +123,7 @@ function showSession(string $key = "message"): string
 
 //database functions start
 
-function run(string $sql, bool $closeConnection = true): object|bool
+function run(string $sql, bool $closeConnection = false): object|bool
 {
   try {
     $query = mysqli_query($GLOBALS['conn'], $sql);
@@ -114,6 +132,55 @@ function run(string $sql, bool $closeConnection = true): object|bool
   } catch (Exception $e) {
     dd($e);
   }
+}
+
+function paginate($sql, $limit = 10)
+{
+  $total = first(str_replace("*", "COUNT(id) AS total", $sql))['total'];
+  $totalPages = ceil($total / $limit);
+  $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+  $offset = ($currentPage - 1) * $limit;
+  $sql .= " LIMIT $offset,$limit";
+  $links = [];
+  for ($i = 1; $i <= $totalPages; $i++) {
+    $queries = $_GET;
+    $queries['page'] = $i;
+    $url = url() . $GLOBALS['path'] . "?" . http_build_query($queries);
+    $links[] = [
+      'url' => $url,
+      'is_active' => $i == $currentPage ? "active" : "",
+      'page_number' => $i
+    ];
+  }
+  $lists = [
+    "total" => $total,
+    "limit" => $limit,
+    "total_page" => $totalPages,
+    "current_page" => $currentPage,
+    "data" => all($sql),
+    "links" => $links
+  ];
+
+  return $lists;
+}
+
+function createTable($tableName, ...$columns)
+{
+  $sql = "DROP TABLE IF EXISTS $tableName";
+  run($sql);
+
+  logger($tableName . " is dropped", 31);
+
+  $sql = "CREATE TABLE $tableName (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    " . join(",", $columns) . ",
+    `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+  run($sql);
+
+  logger($tableName . " is created");
 }
 
 //database functions end
@@ -133,4 +200,12 @@ function first(string $sql): array
   $query = run($sql);
   $list = mysqli_fetch_assoc($query);
   return $list;
+}
+
+//pretty logger
+//Color Reference - https://i.stack.imgur.com/HFSl1.png
+
+function logger($message, $colorCode = 32): void
+{
+  echo "\e[39m[LOG] " . "\e[{$colorCode}m" . $message . "\n";
 }
