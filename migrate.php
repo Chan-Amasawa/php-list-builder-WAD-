@@ -11,5 +11,6 @@ foreach ($tables as $table) {
 }
 logger("All tables are dropped");
 
-createTable('b', "phone varchar(11) NOT NULL", "address varchar(20) NOT NULL");
-createTable('chan', "name varchar(20) NOT NULL", "money int(11) NOT NULL");
+//create tables and drop the rest
+createTable('my', 'name varchar(20) NOT NULL', 'money int(11) NOT NULL');
+createTable('inventories', 'name varchar(20) NOT NULL', 'price int(11) NOT NULL', 'stock int(11) NOT NULL');

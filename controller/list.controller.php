@@ -22,7 +22,7 @@ function store()
   $money = $_POST['money'];
   $sql = "INSERT INTO my (name, money) VALUES ('$name', $money)";
   run($sql);
-  redirect(route('list'), "List created successfully");
+  return redirect(route('list'), "List created successfully");
 }
 
 function delete()
@@ -30,7 +30,7 @@ function delete()
   $id = $_POST['id'];
   $sql = "DELETE FROM my WHERE id = $id";
   run($sql);
-  redirect($_SERVER['HTTP_REFERER'], "List deleted successfully");
+  return redirect($_SERVER['HTTP_REFERER'], "List deleted successfully");
 }
 
 function edit()
@@ -47,5 +47,5 @@ function update()
   $money = $_POST['money'];
   $sql = "UPDATE my SET name='$name', money = $money WHERE id = $id";
   run($sql);
-  redirect($_SERVER['HTTP_REFERER'], "List updated successfully");
+  return redirect(route('list'), "List updated successfully");
 }
