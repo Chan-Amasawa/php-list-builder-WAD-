@@ -68,9 +68,9 @@ function checkRequestMethod(string $methodName): bool
   $serverRequestMethod = $_SERVER['REQUEST_METHOD'];
   if ($methodName === 'POST' && $serverRequestMethod === 'POST') {
     $result = true;
-  } elseif ($methodName === 'PUT' && $serverRequestMethod === 'POST' && !empty($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT') {
+  } elseif ($methodName === 'PUT' && $serverRequestMethod = 'PUT' || ($serverRequestMethod === 'POST' && !empty($_POST['_method']) && strtoupper($_POST['_method']) === 'PUT')) {
     $result = true;
-  } elseif ($methodName === 'DELETE' && $serverRequestMethod === 'POST' && !empty($_POST['_method']) && strtoupper($_POST['_method']) === 'DELETE') {
+  } elseif ($methodName === 'DELETE' && $serverRequestMethod === 'DELETE' || ($serverRequestMethod = 'POST' && !empty($_POST['_method']) && strtoupper($_POST['_method']) === 'DELETE')) {
     $result = true;
   }
   return $result;
@@ -177,7 +177,7 @@ function createTable($tableName, ...$columns)
     `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
     `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
     PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+  ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
   run($sql);
 
   logger($tableName . " is created");
@@ -195,6 +195,7 @@ function all(string $sql): array
   return $list;
 }
 
+//returned one data from database
 function first(string $sql): array
 {
   $query = run($sql);
@@ -208,4 +209,16 @@ function first(string $sql): array
 function logger($message, $colorCode = 32): void
 {
   echo "\e[39m[LOG] " . "\e[{$colorCode}m" . $message . "\n";
+}
+
+//response JSON
+function responseJson(mixed $data, int $status = 200): string
+{
+  header("Content-type:Application/json");
+  http_response_code($status);
+  if (is_array($data)) {
+    return print(json_encode($data));
+  } else {
+    return print(json_encode(["message" => $data]));
+  }
 }
