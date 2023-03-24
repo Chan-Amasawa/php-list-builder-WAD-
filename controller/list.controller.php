@@ -4,10 +4,9 @@ function index()
 {
   $sql = "SELECT * FROM my";
   if (!empty($_GET['q'])) {
-    $q = $_GET['q'];
+    $q = filter($_GET['q'], true);
     $sql .= " WHERE name LIKE '%$q%'";
   }
-
   return view("list/index", ["lists" => paginate($sql)]);
 }
 
@@ -18,7 +17,7 @@ function create()
 
 function store()
 {
-  $name = $_POST['name'];
+  $name = filter($_POST['name']);
   $money = $_POST['money'];
   $sql = "INSERT INTO my (name, money) VALUES ('$name', $money)";
   run($sql);

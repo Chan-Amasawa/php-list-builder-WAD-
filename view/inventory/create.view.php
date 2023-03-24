@@ -8,20 +8,35 @@
 
 <form action="<?= route("inventory-store"); ?>" method="post">
   <div class="row rounded border p-5 align-items-end">
-    <div class="col">
+    <div class="col-6">
       <label for="name" class=" form-label">Item Name</label>
-      <input type="text" id="name" name="name" class="form-control" required>
+      <input type="text" id="name" name="name" value="<?= old('name') ?>" class="form-control <?= hasError('name') ? 'is-invalid' : ''; ?>">
+      <?php if (hasError('name')) : ?>
+        <div class="invalid-feedback">
+          <?= showError('name') ?>
+        </div>
+      <?php endif; ?>
     </div>
-    <div class="col">
+    <div class="col-6">
       <label for="price" class=" form-label">Price</label>
-      <input type="number" id="price" name="price" class="form-control" required>
+      <input type="number" id="price" name="price" value="<?= old('price') ?>" class="form-control <?= hasError('price') ? 'is-invalid' : ''; ?>">
+      <?php if (hasError('price')) : ?>
+        <div class="invalid-feedback">
+          <?= showError('price') ?>
+        </div>
+      <?php endif; ?>
     </div>
-    <div class="col">
+    <div class="col-12">
       <label for="stock" class=" form-label">Stock</label>
-      <input type="number" id="stock" name="stock" class="form-control" required>
+      <input type="number" id="stock" name="stock" value="<?= old('stock') ?>" class="form-control <?= hasError('stock') ? 'is-invalid' : ''; ?>">
+      <?php if (hasError('stock')) : ?>
+        <div class="invalid-feedback">
+          <?= showError('stock') ?>
+        </div>
+      <?php endif; ?>
     </div>
-    <div class="col-2">
-      <button class="btn btn-primary">Add Item</button>
+    <div class="col-12 mt-3">
+      <button class="btn btn-primary w-100">Add Item</button>
     </div>
   </div>
 </form>

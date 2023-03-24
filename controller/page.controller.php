@@ -10,3 +10,8 @@ function about()
 {
   return view('about');
 }
+
+function ss()
+{
+  dd($_SESSION);
+}

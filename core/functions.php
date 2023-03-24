@@ -61,6 +61,11 @@ function redirect(string $url, string $message = "null"): void
   header("LOCATION:" . $url);
 }
 
+function redirectBack(string $message = "null"): void
+{
+  redirect($_SERVER['HTTP_REFERER'], $message);
+}
+
 function checkRequestMethod(string $methodName): bool
 {
   $result = false;
@@ -112,7 +117,7 @@ function hasSession(string $key = "message"): bool
   return false;
 }
 
-function showSession(string $key = "message"): string
+function showSession(string $key = "message"): string|array
 {
   $message = $_SESSION[$key];
   unset($_SESSION[$key]);
@@ -120,6 +125,62 @@ function showSession(string $key = "message"): string
 }
 
 //session functions end
+
+//validation functions start
+
+function old(string $key)
+{
+  if (isset($_SESSION['old'][$key])) {
+    $data = $_SESSION['old'][$key];
+    unset($_SESSION['old'][$key]);
+    return $data;
+  }
+  return null;
+}
+
+function validationStart()
+{
+  unset($_SESSION['error']);
+  unset($_SESSION['old']);
+  $_SESSION['old'] = $_POST;
+}
+
+function setError(string $key, string $message): void
+{
+  $_SESSION['error'][$key] = $message;
+}
+
+function hasError(string $key): bool
+{
+  if (!empty($_SESSION['error'][$key])) return true;
+  return false;
+}
+
+function showError(string $key)
+{
+  $message = $_SESSION['error'][$key];
+  unset($_SESSION['error'][$key]);
+  return $message;
+}
+
+function validationEnd(bool $isApi = false)
+{
+  if (!empty(hasSession("error"))) {
+    if ($isApi) {
+      responseJson([
+        'status' => false,
+        'errors' => showSession("error")
+      ]);
+    } else {
+      redirectBack();
+    }
+    die();
+  } else {
+    unset($_SESSION['old']);
+  }
+}
+//validation functions end
+
 
 //database functions start
 
@@ -221,4 +282,20 @@ function responseJson(mixed $data, int $status = 200): string
   } else {
     return print(json_encode(["message" => $data]));
   }
+}
+
+//sanitize the data
+
+function filter($str, bool $strip = false, $allowed = null)
+{
+  // return strip_tags($str, $allowed);   //use strip_tags to remove html tags
+
+  if ($strip) {
+    $str = strip_tags($str);
+  }
+  $str = trim($str);
+  $str = htmlentities($str, ENT_QUOTES);
+  $str = stripslashes($str);
+
+  return $str;
 }

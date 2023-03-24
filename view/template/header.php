@@ -11,5 +11,6 @@
 </head>
 
 <body>
-  <div class="m-5">
+  <?php require_once ViewDir . "/template/nav.php"; ?>
+  <div class="mx-5 my-3">
     <?php require_once ViewDir . "/template/session-message.php"; ?>

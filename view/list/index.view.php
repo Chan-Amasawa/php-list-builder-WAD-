@@ -8,7 +8,7 @@
   </div>
   <div>
     <form class="d-flex input-group " method="get" action="">
-      <input class="form-control border-end-0" name="q" placeholder="Search" value="<?= $_GET['q'] ?>">
+      <input class="form-control border-end-0" name="q" placeholder="Search" value="<?= filter($_GET['q'], true) ?>">
       <?php if (isset($_GET['q'])) : ?>
         <a href="<?= route('list'); ?>" class="input-group-text border-start-0">
           <i class=" bi bi-x position-relative my-auto"></i>
